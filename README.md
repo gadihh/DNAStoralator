@@ -1,7 +1,7 @@
 # DNASimulator
 DNA Simulator for Technion
 
-# [Please check the wiki for the documentation](https://github.com/NiliStein/DNASimulator/wiki)
+# [Please check the wiki for the documentation](https://github.com/gadihh/DNAStoralator/wiki)
 
 # DNASimulator
 
