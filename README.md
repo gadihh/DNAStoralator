@@ -1,11 +1,11 @@
-# DNASimulator
-DNA Simulator for Technion
+# DNAStoralator
+DNA Storalator for Technion
 
 # [Please check the wiki for the documentation](https://github.com/gadihh/DNAStoralator/wiki)
 
-# DNASimulator
+# DNAStoralator
 
-DNASimulator is a tool developed by Gadi Chaykin and Nili Furman and supervised by Omer Sabary and Eithan Yaakovi from the Technion - Israel Institute of Technology, in order to provide a convenient simulator environment for testing methods of data encoding and decoding in DNA storage.
+DNAStoralator is a tool developed by Gadi Chaykin and Nili Furman and supervised by Omer Sabary and Eitan Yaakobi from the Technion - Israel Institute of Technology, in order to provide a convenient simulator environment for testing methods of data encoding and decoding in DNA storage.
 
 The GUI of the tool was developed with pyQt.
 
