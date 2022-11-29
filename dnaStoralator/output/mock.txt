@@ -1,0 +1,11 @@
+Total number of clusters: 2385
+Edit distance hist:
+0   2340
+1   2372
+2   2380
+3   2385
+Substitution rate: 0
+Deletion rate: 0
+Insertion rate: 0
+Error rate: 0
+Success rate: 1
