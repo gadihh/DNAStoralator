@@ -1,11 +1,11 @@
-# DNASimulator
-DNA Simulator for Technion
+# DNAStoralator
+DNA Storalator for Technion
 
-# [Please check the wiki for the documentation](https://github.com/NiliStein/DNASimulator/wiki)
+# [Please check the wiki for the documentation](https://github.com/gadihh/DNAStoralator/wiki)
 
-# DNASimulator
+# DNAStoralator
 
-DNASimulator is a tool developed by Gadi Chaykin and Nili Furman and supervised by Omer Sabary and Eithan Yaakovi from the Technion - Israel Institute of Technology, in order to provide a convenient simulator environment for testing methods of data encoding and decoding in DNA storage.
+DNAStoralator is a tool developed by Gadi Chaykin and Nili Furman and supervised by Omer Sabary and Eitan Yaakobi from the Technion - Israel Institute of Technology, in order to provide a convenient simulator environment for testing methods of data encoding and decoding in DNA storage.
 
 The GUI of the tool was developed with pyQt.
 
@@ -31,7 +31,11 @@ or
 ```
 python3 app.py
 ```
-(depends on your environment)
+
+** In case you use mac, you might get "macOS cannot verify that this app is free from malware", in this case, please follow this instruction. 
+ Go to System Preferences... > Security & Privacy and there should be a button saying Open Anyway, under the General tab.
+** In case you use linux, make sure to go to the reconstruction_alg folder in this repository and add permission to all the algorithms by typing "chmod 777 *" via terminal. 
+
 
 # Project Hierarchy
 

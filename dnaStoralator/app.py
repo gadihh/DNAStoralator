@@ -26,7 +26,7 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.setupUi(self)
 
         # set the title
-        self.setWindowTitle('DNA Simulator')
+        self.setWindowTitle('DNA Storalator')
 
         self.inputDNAPath = ""
         # self.reconstruction_input_path =
@@ -578,13 +578,29 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
     def evyat_files_path(self):
         if platform.system() == "Linux":
             # inputDNAPath = '/home_nfs/sgamer8/DNAindex' + str(index) + '/files/' + str(index) + '_allclustersofindex.txt'
-            evyat_path = '/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology + '/' + str(
-                self.clustering_index) + '_evyat.txt'
-            shuffled_path = '/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology + '/' + str(
-                self.clustering_index) + '_errors_shuffled.txt'
-            if not os.access('/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology, os.F_OK):
-                os.mkdir('/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology)
+            #evyat_path = '/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology + '/' + str(
+            #    self.clustering_index) + '_evyat.txt'
+            #shuffled_path = '/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology + '/' + str(
+            #    self.clustering_index) + '_errors_shuffled.txt'
+            #if not os.access('/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology, os.F_OK):
+            #    os.mkdir('/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology)
+            # inputDNAPath = 'files/' + str(index) + '_allclustersofindex.txt'
+            evyat_path = 'files/' + self.chosen_technology + '/' + 'evyat.txt'
+            shuffled_path = 'files/' + self.chosen_technology + '/' + 'errors_shuffled.txt'
+            if not os.access('files', os.F_OK):
+                os.mkdir('files')
+            if not os.access('files/' + self.chosen_technology, os.F_OK):
+                os.mkdir('files/' + self.chosen_technology)
+
         elif platform.system() == "Windows":
+            # inputDNAPath = 'files/' + str(index) + '_allclustersofindex.txt'
+            evyat_path = 'files/' + self.chosen_technology + '/' + 'evyat.txt'
+            shuffled_path = 'files/' + self.chosen_technology + '/' + 'errors_shuffled.txt'
+            if not os.access('files', os.F_OK):
+                os.mkdir('files')
+            if not os.access('files/' + self.chosen_technology, os.F_OK):
+                os.mkdir('files/' + self.chosen_technology)
+        elif platform.system() == "Darwin":
             # inputDNAPath = 'files/' + str(index) + '_allclustersofindex.txt'
             evyat_path = 'files/' + self.chosen_technology + '/' + 'evyat.txt'
             shuffled_path = 'files/' + self.chosen_technology + '/' + 'errors_shuffled.txt'
@@ -658,10 +674,14 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.evt_worker_finished()
 
         if platform.system() == "Linux":
-            results_f = '/home_nfs/sgamer8/DNAindex' + str(
-                self.clustering_index) + '/cluster_output/' + self.chosen_technology + '/' + str(
-                self.clustering_index) + '_final_results.txt'
+            #results_f = '/home_nfs/sgamer8/DNAindex' + str(
+            #    self.clustering_index) + '/cluster_output/' + self.chosen_technology + '/' + str(
+            #    self.clustering_index) + '_final_results.txt'
+            results_f = 'cluster_output/' + self.chosen_technology + '/' + str(self.clustering_index) + '_final_results.txt'
+
         elif platform.system() == "Windows":
+            results_f = 'cluster_output/' + self.chosen_technology + '/' + str(self.clustering_index) + '_final_results.txt'
+        elif platform.system() == "Darwin":
             results_f = 'cluster_output/' + self.chosen_technology + '/' + str(self.clustering_index) + '_final_results.txt'
 
         text = open(results_f).read()
@@ -764,7 +784,8 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
 
     def reconstruction_finished(self):
         if platform.system() == "Linux":
-            working_dir = '/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology
+            #working_dir = '/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology
+            working_dir = 'files/' + self.chosen_technology
         elif platform.system() == "Windows":
             working_dir = 'files/' + self.chosen_technology
         self.label_progress.setText('We are done :)')
@@ -777,10 +798,10 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         process_path = None
         if platform.system() == "Linux" or platform == "linux2":
             # linux
-            process_path = '../reconstruction_algs/' + alg_file_name + "Linux"
+            process_path = '../../reconstruction_algs/' + alg_file_name + "Linux"
         elif platform.system() == "Darwin":
             # OS X
-            process_path = '../reconstruction_algs/' + alg_file_name + "Mac"
+            process_path = '../../reconstruction_algs/' + alg_file_name + "Mac"
         elif platform.system() == "Windows":
             # Windows...
             process_path = 'reconstruction_algs/' + alg_file_name + ".exe"
@@ -794,12 +815,16 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
 
     def run_reconstruction_algo(self):
         if platform.system() == "Linux":
-            evyat_path = '/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology + '/' + 'evyat.txt'
-            working_dir = '/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology
+            #evyat_path = '/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology + '/' + 'evyat.txt'
+            #working_dir = '/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology
+            evyat_path = 'files/' + self.chosen_technology + '/' + 'evyat.txt'
+            working_dir = 'files/' + self.chosen_technology
         elif platform.system() == "Windows":
             evyat_path = 'files/' + self.chosen_technology + '/' + 'evyat.txt'
             working_dir = 'files/' + self.chosen_technology
-
+        elif platform.system() == "Darwin":
+            evyat_path = 'files/' + self.chosen_technology + '/' + 'evyat.txt'
+            working_dir = 'files/' + self.chosen_technology
         if not os.path.isfile(evyat_path):
             self.msg_box_with_error('Please run clustering first, or provide the evyat.txt input file')
             self.label_progress.setText('')
@@ -877,11 +902,14 @@ class ClusteringWorker(QThread):
         [num_of_errors, num_of_false_negative] = clusters.compare_evyat_with_clustering()
 
         if platform.system() == "Linux":
-            results_f = '/home_nfs/sgamer8/DNAindex' + str(self.cluster_index) + '/cluster_output/' + self.cluster_tech + '/' + str(
-                self.cluster_index) + '_final_results.txt'
-        elif platform.system() == "Windows":
+            #results_f = '/home_nfs/sgamer8/DNAindex' + str(self.cluster_index) + '/cluster_output/' + self.cluster_tech + '/' + str(
+            #    self.cluster_index) + '_final_results.txt'
             results_f = 'cluster_output/' + self.cluster_tech + '/' + str(self.cluster_index) + '_final_results.txt'
 
+        elif platform.system() == "Windows":
+            results_f = 'cluster_output/' + self.cluster_tech + '/' + str(self.cluster_index) + '_final_results.txt'
+        elif platform.system() == "Darwin":
+            results_f = 'cluster_output/' + self.cluster_tech + '/' + str(self.cluster_index) + '_final_results.txt'
         with open(results_f, 'w') as results_file:
             print("Run time: %s seconds" % round((time.time() - start_time),2), file=results_file)
             print('Number of false positives: ' + num_of_errors, file=results_file)

@@ -1,6 +1,7 @@
 import argparse
 import threading
 from leven import levenshtein
+import os
 
 from simulator import *
 import time
@@ -16,9 +17,13 @@ class Clustering:
         self.evyat_dict_strings = {}
         self.thrown_strands_dict = {}
         if platform.system() == "Linux":
-            self.shuffled_file = '/home_nfs/sgamer8/DNAindex' + str(
-                self.index) + '/files/' + self.technology + '/' + 'errors_shuffled.txt'
+            #self.shuffled_file = '/home_nfs/sgamer8/DNAindex' + str(
+            #    self.index) + '/files/' + self.technology + '/' + 'errors_shuffled.txt'
+            self.shuffled_file = 'files/' + self.technology + '/' + 'errors_shuffled.txt'
+
         elif platform.system() == "Windows":
+            self.shuffled_file = 'files/' + self.technology + '/' + 'errors_shuffled.txt'
+        elif platform.system() == "Darwin":
             self.shuffled_file = 'files/' + self.technology + '/' + 'errors_shuffled.txt'
         self.number_of_strands_in_wrong_cluster = 0
         self.number_of_false_negative = 0
@@ -74,13 +79,26 @@ class Clustering:
                 self.dict_indices[line[:self.index]].append(counter)
                 self.dict_strings[line[:self.index]].append(line.rstrip('\n'))
         if platform.system() == "Linux":
-            outputdict_path = '/home_nfs/sgamer8/DNAindex' + str(self.index) + '/cluster_output/' + self.technology + '/' + str(
-                self.index) + '_allclustersdict'
-            outputstringsdict_path = '/home_nfs/sgamer8/DNAindex' + str(
-                self.index) + '/cluster_output/' + self.technology + '/' + str(self.index) + '_allclustersstringdict'
+            #outputdict_path = '/home_nfs/sgamer8/DNAindex' + str(self.index) + '/cluster_output/' + self.technology + '/' + str(
+            #    self.index) + '_allclustersdict'
+            #outputstringsdict_path = '/home_nfs/sgamer8/DNAindex' + str(
+            #    self.index) + '/cluster_output/' + self.technology + '/' + str(self.index) + '_allclustersstringdict'
+            outputdict_path = 'cluster_output/' + self.technology + '/' + str(self.index) + '_allclustersdict'
+            outputstringsdict_path = 'cluster_output/' + self.technology + '/' + str(
+                self.index) + '_allclustersstringdict'
+            if not os.access('cluster_output/' + self.technology + '/', os.F_OK):
+                os.mkdir('cluster_output/' + self.technology + '/')
         elif platform.system() == "Windows":
             outputdict_path = 'cluster_output/' + self.technology + '/' + str(self.index) + '_allclustersdict'
             outputstringsdict_path = 'cluster_output/' + self.technology + '/' + str(self.index) + '_allclustersstringdict'
+        elif platform.system() == "Darwin": #MacOS
+            outputdict_path = 'cluster_output/' + self.technology + '/' + str(self.index) + '_allclustersdict'
+            outputstringsdict_path = 'cluster_output/' + self.technology + '/' + str(self.index) + '_allclustersstringdict'
+            #os.mkdir(outputdict_path)
+            #os.mkdir(outputstringsdict_path)
+            if not os.access('cluster_output/' + self.technology + '/', os.F_OK):
+                os.mkdir('cluster_output/' + self.technology + '/')
+                #os.mkdir('/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology)
         with open(outputdict_path, 'w') as outputdict, open(outputstringsdict_path, 'w') as outputstringsdict:
             for key1, key2 in zip(self.dict_indices, self.dict_strings):
                 print(key1, end=" ", file=outputdict)
@@ -115,10 +133,16 @@ class Clustering:
         in_cluster = 0
 
         if platform.system() == "Linux":
-            evyat_path = '/home_nfs/sgamer8/DNAindex' + str(self.index) + '/files/' + self.technology + '/' + 'evyat.txt'
-            evyatdict_path = '/home_nfs/sgamer8/DNAindex' + str(self.index) + '/files/' + self.technology + '/' + str(
-                self.index) + '_evyatdict'
+            #evyat_path = '/home_nfs/sgamer8/DNAindex' + str(self.index) + '/files/' + self.technology + '/' + 'evyat.txt'
+            #evyatdict_path = '/home_nfs/sgamer8/DNAindex' + str(self.index) + '/files/' + self.technology + '/' + str(
+            #    self.index) + '_evyatdict'
+            evyat_path = 'files/' + self.technology + '/' + 'evyat.txt'
+            evyatdict_path = 'files/' + self.technology + '/' + str(self.index) + '_evyatdict'
+
         elif platform.system() == "Windows":
+            evyat_path = 'files/' + self.technology + '/' + 'evyat.txt'
+            evyatdict_path = 'files/' + self.technology + '/' + str(self.index) + '_evyatdict'
+        elif platform.system() == "Darwin":
             evyat_path = 'files/' + self.technology + '/' + 'evyat.txt'
             evyatdict_path = 'files/' + self.technology + '/' + str(self.index) + '_evyatdict'
 
@@ -143,11 +167,19 @@ class Clustering:
 
     def compare_evyat_with_clustering(self):
         if platform.system() == "Linux":
-            strands_in_wrong_cluster = '/home_nfs/sgamer8/DNAindex' + str(
-                self.index) + '/cluster_output/' + self.technology + '/' + str(self.index) + '_strands_in_wrong_cluster.txt'
-            false_positive = '/home_nfs/sgamer8/DNAindex' + str(self.index) + '/cluster_output/' + self.technology + '/' + str(
-                self.index) + '_false_positive.txt'
+            #strands_in_wrong_cluster = '/home_nfs/sgamer8/DNAindex' + str(
+            #    self.index) + '/cluster_output/' + self.technology + '/' + str(self.index) + '_strands_in_wrong_cluster.txt'
+            #false_positive = '/home_nfs/sgamer8/DNAindex' + str(self.index) + '/cluster_output/' + self.technology + '/' + str(
+            #    self.index) + '_false_positive.txt'
+            strands_in_wrong_cluster = 'cluster_output/' + self.technology + '/' + str(
+                self.index) + '_strands_in_wrong_cluster.txt'
+            false_positive = 'cluster_output/' + self.technology + '/' + str(self.index) + '_false_positive.txt'
+
         elif platform.system() == "Windows":
+            strands_in_wrong_cluster = 'cluster_output/' + self.technology + '/' + str(
+                self.index) + '_strands_in_wrong_cluster.txt'
+            false_positive = 'cluster_output/' + self.technology + '/' + str(self.index) + '_false_positive.txt'
+        elif platform.system() == "Darwin":
             strands_in_wrong_cluster = 'cluster_output/' + self.technology + '/' + str(
                 self.index) + '_strands_in_wrong_cluster.txt'
             false_positive = 'cluster_output/' + self.technology + '/' + str(self.index) + '_false_positive.txt'
@@ -229,11 +261,14 @@ class Clustering:
 
     def full_edit_distance(self, report_func):
         if platform.system() == "Linux":
-            edit_dist_avg_f = '/home_nfs/sgamer8/DNAindex' + str(self.index) + '/cluster_output/' + self.technology + '/' + str(
-                self.index) + '_edit_dist_averages.txt'
-        elif platform.system() == "Windows":
+            #edit_dist_avg_f = '/home_nfs/sgamer8/DNAindex' + str(self.index) + '/cluster_output/' + self.technology + '/' + str(
+            #    self.index) + '_edit_dist_averages.txt'
             edit_dist_avg_f = 'cluster_output/' + self.technology + '/' + str(self.index) + '_edit_dist_averages.txt'
 
+        elif platform.system() == "Windows":
+            edit_dist_avg_f = 'cluster_output/' + self.technology + '/' + str(self.index) + '_edit_dist_averages.txt'
+        elif platform.system() == "Darwin":
+            edit_dist_avg_f = 'cluster_output/' + self.technology + '/' + str(self.index) + '_edit_dist_averages.txt'
         num_values = pow(4, self.index)
         i = 0
 

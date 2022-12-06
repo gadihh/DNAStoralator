@@ -308,8 +308,10 @@ def mess_output_strands(evyat_path, shuffled_path):
         subprocess.run(args)
     elif platform.system() == "Darwin":
         # OS X
+        #os.chmod("shuffle_prog/shuf_mac", 0o0777)
         args = ['./shuffle_prog/shuf_mac', 'output/errors_temp.txt', '-o', shuffled_path]
         subprocess.run(args)
+        #os.system("./shuffle_prog/shuf_mac output/errors_temp.txt - o " +str(shuffled_path))
     elif platform.system() == "Windows":
         args = ['./shuffle_prog/shuf_windows.exe', 'output/errors_temp.txt', '-o', shuffled_path]
         subprocess.run(args)
