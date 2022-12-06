@@ -34,6 +34,7 @@ python3 app.py
 
 ** In case you use mac, you might get "macOS cannot verify that this app is free from malware", in this case, please follow this instruction. 
  Go to System Preferences... > Security & Privacy and there should be a button saying Open Anyway, under the General tab.
+
 ** In case you use linux, make sure to go to the reconstruction_alg folder in this repository and add permission to all the algorithms by typing "chmod 777 *" via terminal. 
 
 
