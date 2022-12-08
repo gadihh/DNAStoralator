@@ -21,6 +21,7 @@ Install the following:
 * Pillow (PyPI)
 * matplotlib
 * edlib
+* leven
 
 Then, to run the app, run:
 
