@@ -174,17 +174,19 @@ class Clustering:
             strands_in_wrong_cluster = 'cluster_output/' + self.technology + '/' + str(
                 self.index) + '_strands_in_wrong_cluster.txt'
             false_positive = 'cluster_output/' + self.technology + '/' + str(self.index) + '_false_positive.txt'
+            final_shuffled_after_clustering = 'cluster_output/' + self.technology + '/' + 'errors_shuffled.txt'
 
         elif platform.system() == "Windows":
             strands_in_wrong_cluster = 'cluster_output/' + self.technology + '/' + str(
                 self.index) + '_strands_in_wrong_cluster.txt'
             false_positive = 'cluster_output/' + self.technology + '/' + str(self.index) + '_false_positive.txt'
+            final_shuffled_after_clustering = 'cluster_output/' + self.technology + '/' + 'errors_shuffled.txt'
         elif platform.system() == "Darwin":
             strands_in_wrong_cluster = 'cluster_output/' + self.technology + '/' + str(
                 self.index) + '_strands_in_wrong_cluster.txt'
             false_positive = 'cluster_output/' + self.technology + '/' + str(self.index) + '_false_positive.txt'
-        with open(strands_in_wrong_cluster, 'w') as wrong_strands_file, open(false_positive,
-                                                                             'w') as false_positive_file:
+            final_shuffled_after_clustering = 'cluster_output/' + self.technology + '/' + 'errors_shuffled.txt'
+        with open(strands_in_wrong_cluster, 'w') as wrong_strands_file, open(false_positive, 'w') as false_positive_file, open(final_shuffled_after_clustering, 'w') as errors_shuffled:
             for key in self.dict_strings.keys():
                 # TODO print the full key in the new evyat file (maybe this one doesn't have the full one, so might need to make a dict between the index and the strand
                 # TODO then print *****************************
@@ -196,7 +198,8 @@ class Clustering:
                         print('Strand: ' + strand, file=wrong_strands_file)
                         print('In the wrong cluster: ' + key, file=wrong_strands_file)
                         print('***************************', file=wrong_strands_file)
-                    # TODO else: write it to the new evyat
+                    else:
+                        print(strand, file=errors_shuffled)
                 for strand in self.thrown_strands_dict[key]:
                     if strand in real_cluster_for_key:
                         self.number_of_false_negative = self.number_of_false_negative + 1
