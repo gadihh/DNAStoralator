@@ -32,7 +32,7 @@
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="error_sim_tab">
          <attribute name="title">
@@ -1307,6 +1307,19 @@
                <layout class="QHBoxLayout" name="horizontalLayout_3">
                 <item>
                  <layout class="QVBoxLayout" name="reconstruction_settings_inner_verticalLayout_2">
+                  <item>
+                   <widget class="QCheckBox" name="use_perfect_clustering_checkBox">
+                    <property name="text">
+                     <string>Use the perfect clustering</string>
+                    </property>
+                    <property name="checkable">
+                     <bool>false</bool>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
                   <item>
                    <widget class="QLabel" name="reconstruction_chosen_technologies_label">
                     <property name="text">

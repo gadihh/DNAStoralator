@@ -66,6 +66,8 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.evyat_path = ''
         self.shuffled_path = ''
 
+        self.perfect_clustering_is_checked = True #TODO change to False when working with the clustering results
+
         self.progressBar.setVisible(False)
 
         # connect push buttons to an event
@@ -171,11 +173,19 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.min_label.setVisible(False)
         self.max_label.setVisible(False)
         self.user_defined_copied_checkBox.stateChanged.connect(self.user_defined_amount)
+        self.use_perfect_clustering_checkBox.stateChanged.connect(self.use_perfect_clustering)
+        self.use_perfect_clustering_checkBox.setCheckState(True) #todo remove when we want to work with the clustering results
 
         # add tool tips in UI
         self.value_lineEdit.setToolTip('Vector syntax example: [1, 10, 5, 9, 6, 200]\n\n'
                                        'Continuous function should be python syntax function. For example: x ** 2')
         self.file_path_lineEdit.setToolTip('A path to your strands file')
+
+    def use_perfect_clustering(self):
+        # self.perfect_clustering_is_checked = self.use_perfect_clustering_checkBox.isChecked()
+        self.perfect_clustering_is_checked = True
+        self.use_perfect_clustering_checkBox.setCheckState(True)
+        #TODO change to the first line of this function and remove the second line when we want to work with the clustering results
 
     def user_defined_amount(self):
         checkbox_status = self.user_defined_copied_checkBox.isChecked()
@@ -785,9 +795,15 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
     def reconstruction_finished(self):
         if platform.system() == "Linux":
             #working_dir = '/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology
-            working_dir = 'files/' + self.chosen_technology
+            if self.perfect_clustering_is_checked:
+                working_dir = 'files/' + self.chosen_technology
+            else:
+                working_dir = 'cluster_output/' + self.chosen_technology
         elif platform.system() == "Windows":
-            working_dir = 'files/' + self.chosen_technology
+            if self.perfect_clustering_is_checked:
+                working_dir = 'files/' + self.chosen_technology
+            else:
+                working_dir = 'cluster_output/' + self.chosen_technology
         self.label_progress.setText('We are done :)')
         self.progressBar.setVisible(False)
         text = open(working_dir + '/output.txt').read()
@@ -817,16 +833,28 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         if platform.system() == "Linux":
             #evyat_path = '/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology + '/' + 'evyat.txt'
             #working_dir = '/home_nfs/sgamer8/DNAindex' + str(self.clustering_index) + '/files/' + self.chosen_technology
-            evyat_path = 'files/' + self.chosen_technology + '/' + 'evyat.txt'
-            working_dir = 'files/' + self.chosen_technology
+            if self.perfect_clustering_is_checked:
+                evyat_path = 'files/' + self.chosen_technology + '/' + 'evyat.txt'
+                working_dir = 'files/' + self.chosen_technology
+            else:
+                evyat_path = 'cluster_output/' + self.chosen_technology + '/' + 'errors_shuffled.txt'
+                working_dir = 'cluster_output/' + self.chosen_technology
         elif platform.system() == "Windows":
-            evyat_path = 'files/' + self.chosen_technology + '/' + 'evyat.txt'
-            working_dir = 'files/' + self.chosen_technology
+            if self.perfect_clustering_is_checked:
+                evyat_path = 'files/' + self.chosen_technology + '/' + 'evyat.txt'
+                working_dir = 'files/' + self.chosen_technology
+            else:
+                evyat_path = 'cluster_output/' + self.chosen_technology + '/' + 'errors_shuffled.txt'
+                working_dir = 'cluster_output/' + self.chosen_technology
         elif platform.system() == "Darwin":
-            evyat_path = 'files/' + self.chosen_technology + '/' + 'evyat.txt'
-            working_dir = 'files/' + self.chosen_technology
+            if self.perfect_clustering_is_checked:
+                evyat_path = 'files/' + self.chosen_technology + '/' + 'evyat.txt'
+                working_dir = 'files/' + self.chosen_technology
+            else:
+                evyat_path = 'cluster_output/' + self.chosen_technology + '/' + 'errors_shuffled.txt'
+                working_dir = 'cluster_output/' + self.chosen_technology
         if not os.path.isfile(evyat_path):
-            self.msg_box_with_error('Please run clustering first, or provide the evyat.txt input file')
+            self.msg_box_with_error('Please run clustering first, or provide the evyat.txt input file in files/technology folder for perfect clustering')
             self.label_progress.setText('')
             return
 
