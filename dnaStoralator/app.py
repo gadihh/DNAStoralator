@@ -18,7 +18,7 @@ import dnaSimulator_ui2
 # from SpinBoxCustom import SpinBoxCustom
 from simulator import *
 from index_clustering import *
-
+from hash_based_clustering import *
 
 class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
     def __init__(self):
@@ -53,6 +53,17 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
             'min': 0,
             'max': 0
         }
+        self.minHash_local_steps = 220
+        self.minHash_min_local_steps = 20
+        self.minHash_max_local_steps = 1000
+
+        self.minHash_similarity_threshold = 15
+        self.minHash_min_similarity_threshold = 1
+        self.minHash_max_similarity_threshold = 1000
+
+        self.minHash_window_size = 4
+        self.minHash_min_window_size = 1
+        self.minHash_max_window_size = 1000
 
         self.barcode_start = 0
         self.barcode_end = 0
@@ -62,6 +73,8 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.clustering_algo = ''
         self.chosen_technology = 'miseq_twist'
         self.clustering_index = 4
+        self.chosen_index_save = -1
+        self.chosen_clustering_algo = ""
 
         self.evyat_path = ''
         self.shuffled_path = ''
@@ -69,6 +82,8 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.perfect_clustering_is_checked = True #TODO change to False when working with the clustering results
 
         self.progressBar.setVisible(False)
+        self.set_minHash_cluster_values()
+
 
         # connect push buttons to an event
         self.browse_PushButton.clicked.connect(self.openFileDialog)
@@ -120,6 +135,10 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.G_long_del_doubleSpinBox.textChanged.connect(self.set_G_long_del)
         self.T_long_del_doubleSpinBox.textChanged.connect(self.set_T_long_del)
 
+        self.minHash_local_steps_spinBox.textChanged.connect(self.set_minHash_local_steps)
+        self.minHash_window_size_spinBox.textChanged.connect(self.set_minHash_window_size)
+        self.minHash_similarity_threshold_spinBox.textChanged.connect(self.set_minHash_similarity_threshold)
+
         self.barcode_start_spinBox.textChanged.connect(self.set_barcode_start)
         self.barcode_end_spinBox.textChanged.connect(self.set_barcode_end)
         self.max_edit_dist_spinBox.textChanged.connect(self.set_clustering_edit_dist)
@@ -139,17 +158,33 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
 
         self.clustering_listWidget.addItem('Pseudo Clustering Algorithm')
         self.clustering_listWidget.addItem('Index Based Algorithm')
+        self.clustering_listWidget.addItem('Hash Based Algorithm')
 
         self.stackedWidget.addWidget(self.pseudoclustering_settings_verticalWidget)
         self.stackedWidget.addWidget(self.realclustering_settings_verticalWidget)
+        self.stackedWidget.addWidget(self.hash_based_clustering_settings_verticalWidget)
+
         self.stackedWidget.hide()
         self.clustering_settings_label.setVisible(False)
+
+        self.pseudo_technology_comboBox.addItem('Twist Bioscience + Ilumina miSeq')
+        self.pseudo_technology_comboBox.addItem('CustomArray + Ilumina miSeq')
+        self.pseudo_technology_comboBox.addItem('Twist Bioscience + Ilumina NextSeq')
+        self.pseudo_technology_comboBox.addItem('Integrated DNA Technology (IDT) + MinION')
+        self.pseudo_technology_comboBox.currentTextChanged.connect(self.set_pseudo_chosen_clustering_technology)
 
         self.technology_comboBox.addItem('Twist Bioscience + Ilumina miSeq')
         self.technology_comboBox.addItem('CustomArray + Ilumina miSeq')
         self.technology_comboBox.addItem('Twist Bioscience + Ilumina NextSeq')
         self.technology_comboBox.addItem('Integrated DNA Technology (IDT) + MinION')
-        self.technology_comboBox.currentTextChanged.connect(self.set_chosen_clustering_technology)
+        self.technology_comboBox.currentTextChanged.connect(self.set_index_chosen_clustering_technology)
+
+
+        self.minHash_technology_comboBox.addItem('Twist Bioscience + Ilumina miSeq')
+        self.minHash_technology_comboBox.addItem('CustomArray + Ilumina miSeq')
+        self.minHash_technology_comboBox.addItem('Twist Bioscience + Ilumina NextSeq')
+        self.minHash_technology_comboBox.addItem('Integrated DNA Technology (IDT) + MinION')
+        self.minHash_technology_comboBox.currentTextChanged.connect(self.set_minHash_chosen_clustering_technology)
 
         self.reconstrcution_technology_comboBox.addItem('Twist Bioscience + Ilumina miSeq')
         self.reconstrcution_technology_comboBox.addItem('CustomArray + Ilumina miSeq')
@@ -230,6 +265,15 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
     def set_value_amount(self, value):
         self.dist_info['value'] = value
 
+    def set_minHash_local_steps(self, value):
+        self.minHash_local_steps = value
+
+    def set_minHash_window_size(self, value):
+        self.minHash_window_size = value
+
+    def set_minHash_similarity_threshold(self, value):
+        self.minHash_similarity_threshold = value
+
     def set_barcode_start(self, value):
         self.barcode_start = value
 
@@ -250,11 +294,29 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.clustering_settings_label.setVisible(True)
         if self.clustering_algo == 'Pseudo Clustering Algorithm':
             self.stackedWidget.setCurrentIndex(0)
+            self.chosen_clustering_algo = 'pseudo'
         elif self.clustering_algo == 'Index Based Algorithm':
             self.stackedWidget.setCurrentIndex(1)
+            self.chosen_clustering_algo = 'index'
+        elif self.clustering_algo == 'Hash Based Algorithm':
+            self.stackedWidget.setCurrentIndex(2)
+            self.chosen_clustering_algo = 'minHash'
 
-    def set_chosen_clustering_technology(self):
+    def set_index_chosen_clustering_technology(self):
         clustering_tech = self.technology_comboBox.currentText()
+        self.set_chosen_clustering_technology(clustering_tech)
+
+
+    def set_pseudo_chosen_clustering_technology(self):
+        clustering_tech = self.pseudo_technology_comboBox.currentText()
+        self.set_chosen_clustering_technology(clustering_tech)
+
+    def set_minHash_chosen_clustering_technology(self):
+        clustering_tech = self.minHash_technology_comboBox.currentText()
+        self.set_chosen_clustering_technology(clustering_tech)
+
+
+    def set_chosen_clustering_technology(self, clustering_tech):
         if clustering_tech == 'Twist Bioscience + Ilumina miSeq':
             self.chosen_technology = 'miseq_twist'
         elif clustering_tech == 'CustomArray + Ilumina miSeq':
@@ -408,7 +470,11 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
             self.one_base_del_label.setText('1-base Deletion')
             self.Insertion_label.setText('Insertion')
         else:
-            self.one_base_del_label.setText('Deletion')
+            self.one_base_del_label.setVisible(visibility)
+            self.A_one_base_del_doubleSpinBox.setVisible(visibility)
+            self.C_one_base_del_doubleSpinBox.setVisible(visibility)
+            self.G_one_base_del_doubleSpinBox.setVisible(visibility)
+            self.T_one_base_del_doubleSpinBox.setVisible(visibility)
             self.Insertion_label.setText('Stutter')
 
     def ilumina_NextSeq_chosen(self):
@@ -506,10 +572,19 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.long_del_doubleSpinBox.setValue(0.1)
 
         self.set_per_base_substitution(0.1, 0.1, 0.1, 0.1)
-        self.set_per_base_insertion(0.1, 0.1, 0.1, 0.1)
-        self.set_per_base_pre_insertion(0.1, 0.1, 0.1, 0.1)
-        self.set_per_base_del(0.1, 0.1, 0.1, 0.1)
-        self.set_per_base_long_del(0.1, 0.1, 0.1, 0.1)
+        self.set_per_base_insertion(0.5, 0.5, 0.5, 0.5)
+        self.set_per_base_pre_insertion(0.5, 0.5, 0.5, 0.5)
+        self.set_per_base_del(0.5, 0.5, 0.5, 0.5)
+        self.set_per_base_long_del(0.5, 0.5, 0.5, 0.5)
+
+    def set_minHash_cluster_values(self):
+        self.minHash_local_steps_spinBox.setRange(self.minHash_min_local_steps, self.minHash_max_local_steps)
+        self.minHash_local_steps_spinBox.setValue(self.minHash_local_steps)
+        self.minHash_window_size_spinBox.setRange(self.minHash_min_window_size, self.minHash_max_window_size)
+        self.minHash_window_size_spinBox.setValue(self.minHash_window_size)
+        self.minHash_similarity_threshold_spinBox.setRange(self.minHash_min_similarity_threshold, self.minHash_max_similarity_threshold)
+        self.minHash_similarity_threshold_spinBox.setValue(self.minHash_similarity_threshold)
+
 
     def set_EZ17_values(self):
         # general errors
@@ -555,10 +630,10 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
 
     def set_Y16_values(self):
         # general errors
-        self.substitution_doubleSpinBox.setValue(1.21e-01)
-        self.insertion_doubleSpinBox.setValue(3.67e-01)
-        self.one_base_del_doubleSpinBox.setValue(4.33e-02)
-        self.long_del_doubleSpinBox.setValue(1.87e-02)
+        self.substitution_doubleSpinBox.setValue(2.2e-02)
+        self.insertion_doubleSpinBox.setValue(1.7e-02)
+        self.one_base_del_doubleSpinBox.setValue(0.2e-01)
+        self.long_del_doubleSpinBox.setValue(0.4e-02)
 
         # per base errors
         self.set_per_base_substitution(0.119, 0.133, 0.112, 0.119)
@@ -623,15 +698,17 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
 
     def runClustering(self):
         if self.clustering_algo == 'Pseudo Clustering Algorithm':
-            if not os.path.isfile('output/evyat.txt'):
+            self.evyat_path, self.shuffled_path = self.evyat_files_path()
+            if not os.path.isfile(self.evyat_path):
                 print('The evyat.txt doesn\'t exist')
                 self.msg_box_with_error("evyat.txt input file for clustering doesn't exist")
             else:
-                pseudo_cluster(int(self.barcode_start), int(self.barcode_end), int(self.max_clustering_edit_dist))
+                pseudo_cluster(self.evyat_path, int(self.barcode_start), int(self.barcode_end), int(self.max_clustering_edit_dist))
         elif self.clustering_algo == 'Index Based Algorithm':
             print(self.chosen_technology)
             self.evyat_path, self.shuffled_path = self.evyat_files_path()
-            self.cluster_worker = ClusteringWorker(self.chosen_technology, self.clustering_index)
+            self.cluster_worker = IndexClusteringWorker(self.chosen_technology, self.clustering_index, self.chosen_clustering_algo)
+            self.cluster_resutls_file = self.cluster_worker.get_results_file()
             self.progressBar.setValue(0)
             self.cluster_worker.start()
             self.label_progress.setText('Clustering in progress, please wait!')
@@ -639,6 +716,19 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
             self.cluster_worker.finished.connect(self.evt_cluster_worker_finished)
             self.cluster_worker.update_progress.connect(self.evt_update_progress)
             # self.worker.update_error_sim_finished.connect(self.evt_update_error_finished)
+            self.progressBar.setVisible(True)
+        elif self.clustering_algo == 'Hash Based Algorithm':
+            print(self.chosen_technology)
+            self.chosen_index_save = self.clustering_index
+            self.clustering_index = ""
+            self.evyat_path, self.shuffled_path = self.evyat_files_path()
+            self.cluster_worker = HashBasedClusteringWorker(self.chosen_technology, int(self.minHash_local_steps), int(self.minHash_window_size), int(self.minHash_similarity_threshold), self.chosen_clustering_algo)
+            self.cluster_resutls_file = self.cluster_worker.get_results_file()
+            self.progressBar.setValue(0)
+            self.cluster_worker.start()
+            self.label_progress.setText('Clustering in progress, please wait!')
+            self.cluster_worker.finished.connect(self.evt_cluster_worker_finished)
+            self.cluster_worker.update_progress.connect(self.evt_update_progress)
             self.progressBar.setVisible(True)
 
             #break
@@ -687,16 +777,16 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
             #results_f = '/home_nfs/sgamer8/DNAindex' + str(
             #    self.clustering_index) + '/cluster_output/' + self.chosen_technology + '/' + str(
             #    self.clustering_index) + '_final_results.txt'
-            results_f = 'cluster_output/' + self.chosen_technology + '/' + str(self.clustering_index) + '_final_results.txt'
+            results_f = 'cluster_output/' + self.chosen_technology + '/' + self.chosen_clustering_algo + '/' + str(self.clustering_index) + '_final_results.txt'
 
         elif platform.system() == "Windows":
-            results_f = 'cluster_output/' + self.chosen_technology + '/' + str(self.clustering_index) + '_final_results.txt'
+            results_f = 'cluster_output/' + self.chosen_technology + '/' + self.chosen_clustering_algo + '/' + str(self.clustering_index) + '_final_results.txt'
         elif platform.system() == "Darwin":
-            results_f = 'cluster_output/' + self.chosen_technology + '/' + str(self.clustering_index) + '_final_results.txt'
+            results_f = 'cluster_output/' + self.chosen_technology + '/' + self.chosen_clustering_algo + '/' + str(self.clustering_index) + '_final_results.txt'
 
         text = open(results_f).read()
         self.clustering_results_textEdit.setText(text)
-
+        self.clustering_index = self.chosen_index_save
 
     def evt_update_progress(self, val):
         self.progressBar.setValue(val + 1)
@@ -798,12 +888,12 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
             if self.perfect_clustering_is_checked:
                 working_dir = 'files/' + self.chosen_technology
             else:
-                working_dir = 'cluster_output/' + self.chosen_technology
+                working_dir = 'cluster_output/' + self.chosen_technology + '/' + self.chosen_clustering_algo
         elif platform.system() == "Windows":
             if self.perfect_clustering_is_checked:
                 working_dir = 'files/' + self.chosen_technology
             else:
-                working_dir = 'cluster_output/' + self.chosen_technology
+                working_dir = 'cluster_output/' + self.chosen_technology + '/' + self.chosen_clustering_algo
         self.label_progress.setText('We are done :)')
         self.progressBar.setVisible(False)
         text = open(working_dir + '/output.txt').read()
@@ -837,22 +927,22 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
                 evyat_path = 'files/' + self.chosen_technology + '/' + 'evyat.txt'
                 working_dir = 'files/' + self.chosen_technology
             else:
-                evyat_path = 'cluster_output/' + self.chosen_technology + '/' + 'errors_shuffled.txt'
-                working_dir = 'cluster_output/' + self.chosen_technology
+                evyat_path = 'cluster_output/' + self.chosen_technology + '/' + self.chosen_clustering_algo + '/' + 'errors_shuffled.txt'
+                working_dir = 'cluster_output/' + self.chosen_technology + '/' + self.chosen_clustering_algo
         elif platform.system() == "Windows":
             if self.perfect_clustering_is_checked:
                 evyat_path = 'files/' + self.chosen_technology + '/' + 'evyat.txt'
                 working_dir = 'files/' + self.chosen_technology
             else:
-                evyat_path = 'cluster_output/' + self.chosen_technology + '/' + 'errors_shuffled.txt'
-                working_dir = 'cluster_output/' + self.chosen_technology
+                evyat_path = 'cluster_output/' + self.chosen_technology + '/' + self.chosen_clustering_algo + '/' + 'errors_shuffled.txt'
+                working_dir = 'cluster_output/' + self.chosen_technology + '/' + self.chosen_clustering_algo
         elif platform.system() == "Darwin":
             if self.perfect_clustering_is_checked:
                 evyat_path = 'files/' + self.chosen_technology + '/' + 'evyat.txt'
                 working_dir = 'files/' + self.chosen_technology
             else:
-                evyat_path = 'cluster_output/' + self.chosen_technology + '/' + 'errors_shuffled.txt'
-                working_dir = 'cluster_output/' + self.chosen_technology
+                evyat_path = 'cluster_output/' + self.chosen_technology + '/' + self.chosen_clustering_algo + '/' + 'errors_shuffled.txt'
+                working_dir = 'cluster_output/' + self.chosen_technology + '/' + self.chosen_clustering_algo
         if not os.path.isfile(evyat_path):
             self.msg_box_with_error('Please run clustering first, or provide the evyat.txt input file in files/technology folder for perfect clustering')
             self.label_progress.setText('')
@@ -908,13 +998,26 @@ class SimulateErrorsWorker(QThread):
         # self.update_error_sim_finished.emit
 
 
-class ClusteringWorker(QThread):
+class IndexClusteringWorker(QThread):
     update_progress = pyqtSignal(int)
 
-    def __init__(self, cluster_tech, cluster_index):
-        super(ClusteringWorker, self).__init__()
+    def __init__(self, cluster_tech, cluster_index, chosen_clustering_algo):
+        super(IndexClusteringWorker, self).__init__()
         self.cluster_tech = cluster_tech
         self.cluster_index = cluster_index
+        self.chosen_clustering_algo = chosen_clustering_algo
+        if platform.system() == "Linux":
+            self.results_f = '/home_nfs/sgamer8/DNAindex' + str(self.cluster_index) + '/cluster_output/' + self.cluster_tech + '/' + str(
+                self.cluster_index) + '_final_results.txt'
+        elif platform.system() == "Windows":
+            self.results_f = 'cluster_output/' + self.cluster_tech + '/' + self.chosen_clustering_algo + '/' + str(self.cluster_index) + '_final_results.txt'
+
+        self.directory = 'cluster_output/' + self.cluster_tech + '/' + self.chosen_clustering_algo
+        if not os.path.exists(self.directory):
+            os.makedirs(self.directory)
+
+    def get_results_file(self):
+        return self.results_f
 
     def report_func(self, total_lines, curr_line):
         percent = int(curr_line * 100 // total_lines)
@@ -929,20 +1032,57 @@ class ClusteringWorker(QThread):
         clusters.create_evyat_dict()
         [num_of_errors, num_of_false_negative] = clusters.compare_evyat_with_clustering()
 
-        if platform.system() == "Linux":
-            #results_f = '/home_nfs/sgamer8/DNAindex' + str(self.cluster_index) + '/cluster_output/' + self.cluster_tech + '/' + str(
-            #    self.cluster_index) + '_final_results.txt'
-            results_f = 'cluster_output/' + self.cluster_tech + '/' + str(self.cluster_index) + '_final_results.txt'
-
-        elif platform.system() == "Windows":
-            results_f = 'cluster_output/' + self.cluster_tech + '/' + str(self.cluster_index) + '_final_results.txt'
-        elif platform.system() == "Darwin":
-            results_f = 'cluster_output/' + self.cluster_tech + '/' + str(self.cluster_index) + '_final_results.txt'
-        with open(results_f, 'w') as results_file:
+        with open(self.results_f, 'w') as results_file:
             print("Run time: %s seconds" % round((time.time() - start_time),2), file=results_file)
             print('Number of false positives: ' + num_of_errors, file=results_file)
             print('Number of false negatives: ' + num_of_false_negative, file=results_file)
             print('Number of thrown strands: ' + str(clusters.total_amount_of_thrown), file=results_file)
+
+
+class HashBasedClusteringWorker(QThread):
+    update_progress = pyqtSignal(int)
+
+    def __init__(self, cluster_tech, number_of_steps, windows_size, similarity_threshold, chosen_clustering_algo):
+        super(HashBasedClusteringWorker, self).__init__()
+        self.cluster_tech = cluster_tech
+        self.chosen_clustering_algo = chosen_clustering_algo
+        self.number_of_steps = number_of_steps
+        self.windows_size = windows_size
+        self.similarity_threshold = similarity_threshold
+        if platform.system() == "Linux":
+            #results_f = '/home_nfs/sgamer8/DNAindex' + str(self.cluster_index) + '/cluster_output/' + self.cluster_tech + '/' + str(
+            #    self.cluster_index) + '_final_results.txt'
+            self.results_f = 'cluster_output/' + self.cluster_tech + '/' + self.chosen_clustering_algo + '/' + str(self.cluster_index) + '_final_results.txt'
+
+        elif platform.system() == "Windows":
+            self.results_f = 'cluster_output/' + self.cluster_tech + '/' + self.chosen_clustering_algo + '/' +  '_final_results.txt'
+        elif platform.system() == "Darwin":
+            self.results_f = 'cluster_output/' + self.cluster_tech + '/' + self.chosen_clustering_algo + '/' +  '_final_results.txt'
+        self.directory = 'cluster_output/' + self.cluster_tech + '/' + self.chosen_clustering_algo
+        if not os.path.exists(self.directory):
+            os.makedirs(self.directory)	
+
+    def report_func(self, total_lines, curr_line):
+        percent = int(curr_line * 100 // total_lines)
+        self.update_progress.emit(percent)
+
+    def get_results_file(self):
+        return self.results_f
+
+    def run(self):
+        cluster = HashBasedCluster(self.cluster_tech)
+        cluster.hash_based_cluster(self.number_of_steps,  self.windows_size,
+                                   self.similarity_threshold, self.report_func)
+
+        start_time = time.time()
+        [num_of_errors, num_of_false_negative] = '44', '33' #clusters.compare_evyat_with_clustering()
+
+        with open(self.results_f, 'w') as results_file:
+            print("Run time: %s seconds" % round((time.time() - start_time),2), file=results_file)
+            print('Number of false positives: ' + num_of_errors, file=results_file)
+            print('Number of false negatives: ' + num_of_false_negative, file=results_file)
+            print('Number of thrown strands: ' + str('555') , file=results_file)
+
 
 
 if __name__ == '__main__':

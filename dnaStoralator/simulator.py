@@ -226,15 +226,17 @@ class Simulator:
         mess_output_strands(evyat_path, shuffled_path)
 
 
-def pseudo_cluster(start, end, dist):
+def pseudo_cluster(evyat_path, start, end, dist):
     """
     Performs pseudo clustering on a given evyat.txt file. Modifies the file.
     :param start: start index of the cluster's identifier sequence.
     :param end: end index (not inclusive) of the cluster's identifier sequence.
     :param dist: maximal edit distance allowed for a sequence to be included in a cluster.
     """
-    with open('output/evyat.txt', 'r') as evyat_f:
-        with open('output/evyat_temp.txt', 'w', newline='\n') as temp_f:
+    temp_evyat_path = evyat_path.removesuffix('evyat.txt')
+    temp_evyat_path += 'temp_evyat.txt'
+    with open(evyat_path, 'r') as evyat_f:
+        with open(temp_evyat_path, 'w', newline='\n') as temp_f:
 
             line = evyat_f.readline()
             design = line
@@ -270,8 +272,8 @@ def pseudo_cluster(start, end, dist):
                 # read next:
                 line = evyat_f.readline()
 
-    os.remove('output/evyat.txt')
-    os.rename(r'output/evyat_temp.txt', r'output/evyat.txt')
+    os.remove(evyat_path)
+    os.rename(temp_evyat_path, evyat_path)
 
 
 def mess_output_strands(evyat_path, shuffled_path):

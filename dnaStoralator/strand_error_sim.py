@@ -140,35 +140,23 @@ class StrandErrorSimulation:
         """
         # this method doesn't have long deletion
         base = self.strand[self.index]
-        base_deletion_rate = self.base_error_rates[base]['d']
-        base_stutter_rate = self.base_error_rates[base]['i']
-        # draw whether there was deletion or not:
         options = ['y', 'n']
-        rates = [base_deletion_rate, 1 - base_deletion_rate]
+        base_stutter_rate = self.base_error_rates[base]['i']
+        rates = [base_stutter_rate, 1 - base_stutter_rate]
         draw = random.choices(options, weights=rates, k=1)
-        if draw[0] == 'y':
-            self.strand = self.inject_error('d')
-            self.err_type = 'd'  # for testing
-            return
-        else:
-            rates = [base_stutter_rate, 1 - base_stutter_rate]
+        is_stutter = (draw[0] == 'y')
+        # for testing, count stutter times
+        self.err_type = 0
+        while is_stutter:
+            self.strand = self.strand[:self.index] + base + self.strand[self.index:]
+            self.index += 1
+            # for testing, count stutter times
+            self.err_type += 1
+            # draw again before next iteration:
             draw = random.choices(options, weights=rates, k=1)
             is_stutter = (draw[0] == 'y')
-            # for testing, count stutter times
-            self.err_type = 0
-            while is_stutter:
-                self.strand = self.strand[:self.index] + base + self.strand[self.index:]
-                # for testing, count stutter times
-                self.err_type += 1
-                # draw again before next iteration:
-                draw = random.choices(options, weights=rates, k=1)
-                is_stutter = (draw[0] == 'y')
-            # increment index to approach next original base:
-            self.index += 1
-            # for testing:
-            if self.err_type == 0:
-                self.err_type = 'n'
-            return
+        self.strand = self.inject_error('d')
+        return
 
     def simulate_error_on_base(self):
         """
