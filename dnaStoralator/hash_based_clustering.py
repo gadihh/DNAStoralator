@@ -12,15 +12,24 @@ class HashBasedCluster:
     def __init__(self, chosen_technology):
         self.technology = chosen_technology
         if platform.system() == "Linux":
-            self.shuffled_file = '/home_nfs/sgamer8/DNAindex' + str(
-                self.index) + '/files/' + self.technology + '/' + 'errors_shuffled.txt'
+            #self.shuffled_file = '/home_nfs/sgamer8/DNAindex' + str(
+            #    self.index) + '/files/' + self.technology + '/' + 'errors_shuffled.txt'
+            self.shuffled_file = 'files/' + self.technology + '/' + 'errors_shuffled.txt'
         elif platform.system() == "Windows":
             self.shuffled_file = 'files/' + self.technology + '/' + 'errors_shuffled.txt'
+        else:
+            self.shuffled_file = './files/' + self.technology + '/' + 'errors_shuffled.txt'
 
         if platform.system() == "Linux":
-            self.evyat_path = '/home_nfs/sgamer8/DNAindex' + str(self.index) + '/files/' + self.technology + '/' + 'evyat.txt'
+            #self.evyat_path = '/home_nfs/sgamer8/DNAindex' + str(self.index) + '/files/' + self.technology + '/' + 'evyat.txt'
+            self.evyat_path = 'files/' + self.technology + '/' + 'evyat.txt'
+
         elif platform.system() == "Windows":
             self.evyat_path = 'files/' + self.technology + '/' + 'evyat.txt'
+        else:
+            self.evyat_path = './files/' + self.technology + '/' + 'evyat.txt'
+
+
 
     def hash_fun(self, x, a, w, l):
         ind = x.find(a)
@@ -96,7 +105,10 @@ class HashBasedCluster:
         strand_id = 0
         original_strand_dict = {} #map from orig strand id to the actual strand
         reads_err_original_strand_dict = {}  # map from read_err to it's orig strand id
-        temp_evyat_path = self.evyat_path.removesuffix('evyat.txt')
+        #print(self.evyat_path[:-9])
+        #temp_evyat_path = self.evyat_path.removesuffix('evyat.txt')
+        temp_evyat_path = self.evyat_path[:-9]
+
         temp_evyat_path += 'temp_evyat.txt'
         with open(self.evyat_path, 'r') as evyat_f:
             line = "j"

@@ -1007,10 +1007,15 @@ class IndexClusteringWorker(QThread):
         self.cluster_index = cluster_index
         self.chosen_clustering_algo = chosen_clustering_algo
         if platform.system() == "Linux":
-            self.results_f = '/home_nfs/sgamer8/DNAindex' + str(self.cluster_index) + '/cluster_output/' + self.cluster_tech + '/' + str(
-                self.cluster_index) + '_final_results.txt'
+            #self.results_f = '/home_nfs/sgamer8/DNAindex' + str(self.cluster_index) + '/cluster_output/' + self.cluster_tech + '/' + str(
+            #    self.cluster_index) + '_final_results.txt'
+            self.results_f = 'cluster_output/' + self.cluster_tech + '/' + self.chosen_clustering_algo + '/' + str(self.cluster_index) + '_final_results.txt'
         elif platform.system() == "Windows":
             self.results_f = 'cluster_output/' + self.cluster_tech + '/' + self.chosen_clustering_algo + '/' + str(self.cluster_index) + '_final_results.txt'
+        else:
+            self.results_f = 'cluster_output/' + self.cluster_tech + '/' + self.chosen_clustering_algo + '/' + str(self.cluster_index) + '_final_results.txt'
+
+
 
         self.directory = 'cluster_output/' + self.cluster_tech + '/' + self.chosen_clustering_algo
         if not os.path.exists(self.directory):
