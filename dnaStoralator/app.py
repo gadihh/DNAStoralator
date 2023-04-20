@@ -1075,18 +1075,15 @@ class HashBasedClusteringWorker(QThread):
         return self.results_f
 
     def run(self):
-        cluster = HashBasedCluster(self.cluster_tech)
-        cluster.hash_based_cluster(self.number_of_steps,  self.windows_size,
+        clustering_alg = HashBasedCluster(self.cluster_tech)
+        start_time = time.time()
+        clustering_alg.hash_based_cluster(self.number_of_steps,  self.windows_size,
                                    self.similarity_threshold, self.report_func)
 
-        start_time = time.time()
-        [num_of_errors, num_of_false_negative] = '44', '33' #clusters.compare_evyat_with_clustering()
-
+        total_clusters_count = clustering_alg.get_number_of_clusters()
         with open(self.results_f, 'w') as results_file:
             print("Run time: %s seconds" % round((time.time() - start_time),2), file=results_file)
-            print('Number of false positives: ' + num_of_errors, file=results_file)
-            print('Number of false negatives: ' + num_of_false_negative, file=results_file)
-            print('Number of thrown strands: ' + str('555') , file=results_file)
+            print('Number of clusters generated: ' + str(total_clusters_count), file=results_file)
 
 
 

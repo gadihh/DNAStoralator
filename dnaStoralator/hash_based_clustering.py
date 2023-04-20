@@ -11,6 +11,7 @@ class HashBasedCluster:
 
     def __init__(self, chosen_technology):
         self.technology = chosen_technology
+        self.total_clusters_count = 0
         if platform.system() == "Linux":
             #self.shuffled_file = '/home_nfs/sgamer8/DNAindex' + str(
             #    self.index) + '/files/' + self.technology + '/' + 'errors_shuffled.txt'
@@ -70,6 +71,9 @@ class HashBasedCluster:
             cnt += 1
             temp = parent[temp]
         return temp
+
+    def get_number_of_clusters(self):
+        return self.total_clusters_count
 
     def edit_dis(self, s1, s2):
         m = len(s1) + 1
@@ -199,6 +203,7 @@ class HashBasedCluster:
                             parent[max_temp] = min_temp
 
         clusters = [sorted(x) for x in list(C_til.values()) if x != []]
+        self.total_clusters_count = len(clusters)
         with open(temp_evyat_path, 'w', newline='\n') as temp_f:
             for cluster in clusters:
                 orig_strand_candidates = []
