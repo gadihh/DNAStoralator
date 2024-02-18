@@ -73,7 +73,7 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.clustering_algo = ''
         self.chosen_technology = 'miseq_twist'
         self.clustering_index = 4
-        self.chosen_index_save = -1
+        self.chosen_index_save = -1 #it was added to save the chosen index after chaning it in the new minhash clustering alg. In case we go back to it
         self.chosen_clustering_algo = ""
 
         self.evyat_path = ''
