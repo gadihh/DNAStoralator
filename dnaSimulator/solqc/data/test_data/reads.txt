@@ -1,0 +1,1 @@
+C:\Users\Tech\Documents\Programming\Python\Storalator\DNASimulator-SOLQC_Integration\dnaSimulator\solqc\data\test_data\toy_data_reads.fastq

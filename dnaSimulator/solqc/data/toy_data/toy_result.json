@@ -1,0 +1,8 @@
+{
+    "statistics" :  {"substitution" : 0.1, "insertion" : 0.2, "one_base_deletion" : 0.3 , "long_deletion" : 0.4},
+    "substitution" : {"a" : 0.5, "c" : 0.6, "g" : 0.7 , "t" : 0.8},
+    "insert" : {"a" : 0.9, "c" : 0.5, "g" : 0.5 , "t" : 0.5},
+    "pre_insert" :  {"a" : 0.5, "c" : 0.5, "g" : 0.5 , "t" : 0.5},
+    "one_base_delete" :  {"a" : 0.5, "c" : 0.5, "g" : 0.5 , "t" : 0.5},
+    "long_delete" :  {"a" : 0.5, "c" : 0.5, "g" : 0.5 , "t" : 0.5}
+}

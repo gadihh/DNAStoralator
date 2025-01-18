@@ -1,0 +1,57 @@
+{
+  "Matchers":{
+    "options" : ["BarcodeAligner", "NEditBarcodeAligner", "EditDistanceAligner"],
+    "hover_docs" :[
+      "This is a barcode aligner",
+      "This is the n edit barcode aligner",
+      "Match read to variant with smallest edit distance"
+    ],
+    "params" : "-m",
+    "selected" : [0],
+    "hover_docs" : [
+      "Graphic representation of the deletion per position in the library",
+      "Graphic representation of the variant distribution in the library",
+      "",
+      "",
+      "The awesome frequency analyzer"]
+  },
+  "Analyzers - Report Analysis":{
+    "options" : [
+      "BaseDependentAnalyzer",
+      "BaseDistributionPerPositionAnalyzer",
+      "CumulativeErrorAnalyzer",
+      "DeletionAnalyzer",
+      "DeletionPositionPerBaseAnalyzer",
+      "ErrorPerPositionAnalyzer",
+      "ErrorRateByGCAnalyzer",
+      "ErrorRatePerBaseTableAnalyzer",
+      "ErrorRatesAnalyzer",
+      "GeneralAnalyzer",
+      "LongDeletionAnalyzer",
+      "ReadsLengthAnalyzer",
+      "VariantDistributionByGCAnalyzer",
+      "VariantDistributionAnalyzer"
+    ],
+    "hover_docs" : [
+      "Graphic representation of the deletion per position in the library",
+      "Graphic representation of the variant distribution in the library",
+      "",
+      "",
+      "The awesome frequency analyzer"
+    ],
+    "params" : "-a",
+    "selected" : [4, 7]
+  },
+
+  "Analyzers - Data":{
+    "options" : ["FrequencyAnalyzer", "MatchingAnalyzer"],
+    "params" : "-a",
+    "selected" : [4, 7],
+    "hover_docs" : [
+      "Graphic representation of the deletion per position in the library",
+      "Graphic representation of the variant distribution in the library",
+      "",
+      "",
+      "The awesome frequency analyzer"]
+  }
+}

@@ -1,0 +1,1 @@
+/Users/omersabary/Desktop/LibAnalyzer/Library-Analyzer-master/data/Erlich/erlich_reads.fastq

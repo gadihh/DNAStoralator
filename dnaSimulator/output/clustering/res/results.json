@@ -1,0 +1,11 @@
+[
+    {
+        "name": "output/error_sim/error__1727615263.txt",
+        "index": 4,
+        "tech": "miseq_twist",
+        "seconds": 456.64,
+        "false_positives": "6135",
+        "false_negatives": "0",
+        "thrown_strands": "15474"
+    }
+]

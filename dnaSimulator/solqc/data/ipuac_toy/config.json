@@ -1,0 +1,8 @@
+{
+    "prefix" : "",
+    "suffix" : "",
+    "length" : 0,
+    "barcode_start" : 0,
+    "barcode_end" : 5,
+    "barcode_tolerance" : 2
+}

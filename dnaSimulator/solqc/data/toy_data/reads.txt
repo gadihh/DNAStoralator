@@ -1,0 +1,1 @@
+C:\studystuff\solqc_integration\DNASimulator\dnaSimulator\solqc\data\toy_data\toy_data_reads.fastq

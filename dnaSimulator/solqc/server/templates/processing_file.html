@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>processing file</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+</head>
+<style>
+    #result_pdf{
+  display: none;
+}
+
+    #time_stamp{
+  display: none;
+}
+    #processing_div{
+  display: none;
+}
+</style>
+<body>
+{% if time_stamp %}
+<p id = "time_stamp">{{time_stamp}}</p>
+{% else %}
+<p>there is no time stamp </p>
+{% endif %}
+<div id = "processing_div">
+<p> Generating Report</p>
+    <progress id = "analyzing_progress">  </progress>
+</div>
+<div id = "result_pdf"> </div>
+<a id = "pdf_link"></a>
+
+<script type="text/javascript" src="{{ url_for('static', filename='analyzing_funcs.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='blockUI.js') }}"></script>
+
+</body>
+</html>

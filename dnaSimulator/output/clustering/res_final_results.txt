@@ -1,0 +1,2 @@
+Run time: 57.08 seconds
+Number of clusters generated: 257
