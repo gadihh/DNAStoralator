@@ -207,7 +207,7 @@ class Simulator:
                         num_copies = self.random[i]
                     else:
                         num_copies = random.randint(self.min_copies, self.max_copies + 1)
-
+                    num_copies = (int)(num_copies)
                     # for each strand, do the simulation on a copy of it num_copies (the generated number of copies) times:
                     for j in range(num_copies):
 
