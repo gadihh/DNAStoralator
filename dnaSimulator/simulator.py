@@ -269,7 +269,7 @@ class Simulator:
                     ##print(self.long_deletion_length_rates)
                     ## OMER END
                     # for each strand, do the simulation on a copy of it num_copies (the generated number of copies) times:
-                    for j in range(num_copies):
+                    for j in range(int(round(num_copies))):
 
                         # duplicate strand to create a working (output) strand:
                         output_strand = copy.deepcopy(original_strand)
