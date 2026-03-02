@@ -1,6 +1,6 @@
 from reportlab.pdfgen import canvas
 
-from dnaSimulator.solqc.src.utils.content import Content
+from src.utils.content import Content
 
 WIDTH = 595.25
 HEIGHT = 841.89
