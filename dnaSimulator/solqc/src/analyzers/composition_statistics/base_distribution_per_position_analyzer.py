@@ -8,8 +8,8 @@ from __future__ import print_function
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from dnaSimulator.solqc.src.analyzers.error_statistics.deletion_analyzer import DeletionAnalyzer
-from dnaSimulator.solqc.src.utils.content import Content
+from src.analyzers.error_statistics.deletion_analyzer import DeletionAnalyzer
+from src.utils.content import Content
 
 
 def isDNA(let):
