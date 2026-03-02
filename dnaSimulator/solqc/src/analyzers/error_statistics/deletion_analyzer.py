@@ -7,9 +7,9 @@ import numpy as np
 import edlib
 import re
 
-from dnaSimulator.solqc.src.analyzers.analyzer import Analyzer
-from dnaSimulator.solqc.src.utils.content import Content
-from dnaSimulator.solqc.src.utils.biology import DELETION, INSERTION, MISMATCH
+from src.analyzers.analyzer import Analyzer
+from src.utils.content import Content
+from src.utils.biology import DELETION, INSERTION, MISMATCH
 
 
 class DeletionAnalyzer (Analyzer):
