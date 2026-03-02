@@ -8,8 +8,8 @@ import pandas as pd
 import json
 import swifter
 
-from dnaSimulator.solqc.src.library_reads.read import Read
-from dnaSimulator.solqc.src.utils import biology
+from src.library_reads.read import Read
+from src.utils import biology
 
 SEQUENCES_COLUMN = "sequence"
 COUNT_COLUMN = "count"
