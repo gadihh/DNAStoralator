@@ -61,7 +61,7 @@ class Simulator:
             skewness).
     """
     def __init__(self, total_error_rates, base_error_rates, input_path, is_stutter_method=False, distribution_info=None,
-                 error_output_path='', shuffled_output_path='', temp_path='', errorPronePatterns=[]):
+                 error_output_path='', shuffled_output_path='', temp_path='', errorPronePatterns=[], uniform_mode=False):
         """
         @param total_error_rates: Dictionary of the total error rates used in the simulation.
             Example of a dictionary:
@@ -132,6 +132,7 @@ class Simulator:
 
         self.to_terminate = False
         self.errorPronePatterns = errorPronePatterns
+        self.uniform_mode = uniform_mode
 
     def simulate_errors(self, report_func):
         """
@@ -277,7 +278,8 @@ class Simulator:
                         strand_error_simulator = strand_error_sim.StrandErrorSimulation(self.total_error_rates,
                                                                                         self.base_error_rates,
                                                                                         self.long_deletion_length_rates,
-                                                                                        output_strand)
+                                                                                        output_strand,
+                                                                                        self.uniform_mode)
                         # simulate according to method:
                         if self.is_stutter_method:
                             output_strand = strand_error_simulator.simulate_stutter_errors_on_strand()

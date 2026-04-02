@@ -39,18 +39,18 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
 
         # initialize general errors
         self.general_errors = {
-            'd': '',
-            'ld': '',
-            'i': '',
-            's': ''
+            'd': 0.0,
+            'ld': 0.0,
+            'i': 0.0,
+            's': 0.0
         }
 
         # initialize per-base errors
         self.per_base_errors = {
-            'A': {'s': '', 'i': '', 'pi': '', 'd': '', 'ld': ''},
-            'C': {'s': '', 'i': '', 'pi': '', 'd': '', 'ld': ''},
-            'G': {'s': '', 'i': '', 'pi': '', 'd': 'test', 'ld': ''},
-            'T': {'s': '', 'i': '', 'pi': '', 'd': '', 'ld': ''}
+            'A': {'s': 0.0, 'i': 0.0, 'pi': 0.0, 'd': 0.0, 'ld': 0.0},
+            'C': {'s': 0.0, 'i': 0.0, 'pi': 0.0, 'd': 0.0, 'ld': 0.0},
+            'G': {'s': 0.0, 'i': 0.0, 'pi': 0.0, 'd': 0.0, 'ld': 0.0},
+            'T': {'s': 0.0, 'i': 0.0, 'pi': 0.0, 'd': 0.0, 'ld': 0.0}
         }
 
         self.dist_info = {
@@ -146,6 +146,7 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.IDT_radioButton.toggled.connect(self.IDT_chosen)
         self.stutter_radioButton.toggled.connect(self.Stutter_chosen)
         self.default_radioButton.toggled.connect(self.Default_chosen)
+        self.uniform_radioButton.toggled.connect(self.uniform_chosen)
         self.cont_radioButton.toggled.connect(self.continuous_amount)
         self.vector_radioButton.toggled.connect(self.vector_amount)
 
@@ -727,6 +728,7 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.default_radioButton.setAutoExclusive(False)
         self.default_radioButton.setChecked(False)
         self.default_radioButton.setAutoExclusive(True)
+        self.uniform_radioButton.setEnabled(True)
         self.error_stats_label.setVisible(True)
         self.error_stats_visibility(True)
 
@@ -743,6 +745,10 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.IDT_radioButton.setAutoExclusive(False)
         self.IDT_radioButton.setChecked(False)
         self.IDT_radioButton.setAutoExclusive(True)
+        self.uniform_radioButton.setEnabled(False)
+        self.uniform_radioButton.setAutoExclusive(False)
+        self.uniform_radioButton.setChecked(False)
+        self.uniform_radioButton.setAutoExclusive(True)
         self.default_radioButton.setEnabled(True)
 
     def error_stats_visibility(self, visibility):
@@ -788,6 +794,10 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.default_radioButton.setAutoExclusive(False)
         self.default_radioButton.setChecked(False)
         self.default_radioButton.setAutoExclusive(True)
+        self.uniform_radioButton.setEnabled(False)
+        self.uniform_radioButton.setAutoExclusive(False)
+        self.uniform_radioButton.setChecked(False)
+        self.uniform_radioButton.setAutoExclusive(True)
         self.error_stats_label.setVisible(True)
         self.error_stats_visibility(True)
 
@@ -805,6 +815,10 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.default_radioButton.setAutoExclusive(False)
         self.default_radioButton.setChecked(False)
         self.default_radioButton.setAutoExclusive(True)
+        self.uniform_radioButton.setEnabled(False)
+        self.uniform_radioButton.setAutoExclusive(False)
+        self.uniform_radioButton.setChecked(False)
+        self.uniform_radioButton.setAutoExclusive(True)
         self.error_stats_label.setVisible(True)
         self.error_stats_visibility(True)
 
@@ -824,6 +838,7 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
     def IDT_chosen(self):
         if self.MinION_radioButton.isChecked() and self.IDT_radioButton.isChecked():
             self.error_chosen_technology = 'minion_idt'
+            self.per_base_grid_visibility(True)
             self.set_Y16_values()
 
     def Default_chosen(self):
@@ -944,6 +959,48 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
         self.set_per_base_del(0.044, 0.048, 0.040, 0.041)
         self.set_per_base_long_del(0.019, 0.021, 0.017, 0.018)
 
+    def set_uniform_Y16_values(self):
+        # general errors: same as Y16 but long deletion = 0
+        self.substitution_doubleSpinBox.setValue(2.2e-02)
+        self.insertion_doubleSpinBox.setValue(1.7e-02)
+        self.one_base_del_doubleSpinBox.setValue(0.2e-01)
+        self.long_del_doubleSpinBox.setValue(0.0)
+
+        # per-base weights = top row values so P(type X) = top row value directly
+        # 'i' = 0.25 for all bases so inserted base is chosen uniformly
+        self.set_per_base_substitution(2.2e-02, 2.2e-02, 2.2e-02, 2.2e-02)
+        self.set_per_base_insertion(0.25, 0.25, 0.25, 0.25)
+        self.set_per_base_pre_insertion(1.7e-02, 1.7e-02, 1.7e-02, 1.7e-02)
+        self.set_per_base_del(0.2e-01, 0.2e-01, 0.2e-01, 0.2e-01)
+        self.set_per_base_long_del(0.0, 0.0, 0.0, 0.0)
+
+    def per_base_grid_visibility(self, visibility):
+        widgets = [
+            self.error_stats_base_label, self.label,
+            self.Substitution_label, self.Insertion_label, self.pre_insertion_label,
+            self.one_base_del_label, self.long_del_label, self.empty_label,
+            self.A_base_label, self.C_base_label, self.G_base_label, self.T_base_label,
+            self.A_substitution_doubleSpinBox, self.C_substitution_doubleSpinBox,
+            self.G_substitution_doubleSpinBox, self.T_substitution_doubleSpinBox,
+            self.A_insertion_doubleSpinBox, self.C_insertion_doubleSpinBox,
+            self.G_insertion_doubleSpinBox, self.T_insertion_doubleSpinBox,
+            self.A_pre_insertion_doubleSpinBox, self.C_pre_insertion_doubleSpinBox,
+            self.G_pre_insertion_doubleSpinBox, self.T_pre_insertion_doubleSpinBox,
+            self.A_one_base_del_doubleSpinBox, self.C_one_base_del_doubleSpinBox,
+            self.G_one_base_del_doubleSpinBox, self.T_one_base_del_doubleSpinBox,
+            self.A_long_del_doubleSpinBox, self.C_long_del_doubleSpinBox,
+            self.G_long_del_doubleSpinBox, self.T_long_del_doubleSpinBox,
+            self.line_4,
+        ]
+        for w in widgets:
+            w.setVisible(visibility)
+
+    def uniform_chosen(self):
+        if self.MinION_radioButton.isChecked() and self.uniform_radioButton.isChecked():
+            self.error_chosen_technology = 'minion_idt_uniform'
+            self.set_uniform_Y16_values()
+            self.per_base_grid_visibility(False)
+
     def openFileDialog(self):
         self.inputDNAPath, _ = QFileDialog.getOpenFileName(self, "Select an input file", './', filter="*.txt")
         self.file_path_lineEdit.setText(self.inputDNAPath)
@@ -1045,7 +1102,8 @@ class dnaSimulator(QMainWindow, dnaSimulator_ui2.Ui_dnaSimulator):
 
                 error_worker = SimulateErrorsWorker(self.general_errors, self.per_base_errors, self.inputDNAPath,
                                                     self.default_radioButton.isChecked(), sent_distance_info,
-                                                    self.error_output, self.shuffled_output, self.errorPronePatterns)  ## OMER ADD Last Arguemnt
+                                                    self.error_output, self.shuffled_output, self.errorPronePatterns,
+                                                    self.uniform_radioButton.isChecked())
                 # all currently active workers are stored at one place for management:
                 self.error_workers.append(error_worker)
                 # connect relevant signals:

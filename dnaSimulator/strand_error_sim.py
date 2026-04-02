@@ -68,7 +68,7 @@ class StrandErrorSimulation:
     :var self.index: the index to implement the error on.
           Initialized to 0.
     """
-    def __init__(self, total_error_rates, base_error_rates, deletion_length_rates, strand):
+    def __init__(self, total_error_rates, base_error_rates, deletion_length_rates, strand, uniform_position=False):
         """
         :param total_error_rates: Dictionary of the total error rates used in the simulation.
             Example of a dictionary:
@@ -84,11 +84,13 @@ class StrandErrorSimulation:
             Example:
             {2: 0.2, 3: 0.1, 4: 0.3, 5: 0.05, 6: 0.001}
         :param strand: The strand to implement errors on.
+        :param uniform_position: If True, disables the position multiplier (x1 across the whole strand).
         """
         self.total_error_rates = total_error_rates
         self.base_error_rates = base_error_rates
         self.deletion_length_rates = deletion_length_rates
         self.strand = strand
+        self.uniform_position = uniform_position
         self.index = 0
         # for testing only:
         self.err_type = None
@@ -184,15 +186,16 @@ class StrandErrorSimulation:
         assert(no_error_rate >= 0)
 
         # 2. draw whether there's error or not in the given rates:
-        # Give higher rates to first third
         options = ['y', 'n']
         rates = [total_error_rate, no_error_rate]
-        if self.index <= (1/3) * len(self.strand):
-            rates[0] = rates[0] * 3/2
-            rates[1] = 1 - rates[0]
-        else:
-            rates[0] = rates[0] * 3/4
-            rates[1] = 1 - rates[0]
+        if not self.uniform_position:
+            # Give higher rates to first third
+            if self.index <= (1/3) * len(self.strand):
+                rates[0] = rates[0] * 3/2
+                rates[1] = 1 - rates[0]
+            else:
+                rates[0] = rates[0] * 3/4
+                rates[1] = 1 - rates[0]
         draw = random.choices(options, weights=rates, k=1)
 
         # 3. check type of drawn result:
